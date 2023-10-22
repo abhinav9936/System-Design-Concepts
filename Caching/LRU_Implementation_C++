@@ -1,0 +1,133 @@
+class LRUCache {
+public:
+    struct Node
+    {
+        Node* next;
+        Node* prev;
+        int key;
+        int value;
+
+        void initialize()
+        {
+            next = NULL;
+            prev = NULL;
+            key = -1;
+            value = -1;
+        }
+    };
+    int cap;
+    unordered_map<int, Node*> keyToNode;
+    Node* head;
+    Node* tail;
+    
+    LRUCache(int capacity) {
+        cap = capacity;
+        head = new Node();
+        head->initialize();
+
+        tail = new Node();
+        tail->initialize();
+
+        head->next = tail;
+        tail->prev = head;
+        keyToNode = unordered_map<int, Node*> ();
+    }
+    void printDL()
+    {
+        Node* curr = head;
+        while(curr->next != NULL)
+        {
+            cout << curr->key << " ";
+            curr = curr->next;
+        }
+        cout <<endl;
+    }
+    void insertAtHead(Node* n)
+    {
+        Node* oldNext = head->next;
+        head->next = n;
+        n->prev = head;
+        n->next = oldNext;
+        oldNext->prev = n;
+    }
+
+    void deleteAtTail()
+    {
+        Node* nodeToDel = tail->prev;
+        tail->prev = nodeToDel->prev;
+        nodeToDel->prev->next = tail;
+
+        delete nodeToDel;
+    }
+
+    void deleteNode(Node* n)
+    {
+        Node* next = n->next;
+        Node* prev = n ->prev;
+
+        prev->next = next;
+        next->prev = prev;
+
+        delete n;
+    }
+    
+    int get(int key) {
+        if(keyToNode.find(key) == keyToNode.end()) return -1;
+        Node* node = keyToNode[key];
+        int x = node->value;
+        deleteNode(node);
+        Node* newNode = new Node();
+        newNode->initialize();
+        newNode->key = key;
+        newNode->value = x;
+        keyToNode[key] = newNode;
+        insertAtHead(newNode);
+        return x;
+    }
+    
+    void put(int key, int value) {
+        if(keyToNode.find(key) != keyToNode.end())
+        {
+            Node* oldNode = keyToNode[key];
+            deleteNode(oldNode);
+            Node* newNode = new Node();
+            newNode->initialize();
+            newNode->key = key;
+            newNode->value = value;
+            keyToNode[key] = newNode;
+            insertAtHead(newNode);
+        }
+        else
+        {
+            if(cap>0)
+            {
+                Node* node = new Node();
+                node->initialize();
+                node->key = key;
+                node->value = value;
+                keyToNode[key] = node;
+                insertAtHead(node);
+                cap--;
+            }
+            else
+            {
+                Node* nodeToBeDeleted = tail->prev;
+                keyToNode.erase(nodeToBeDeleted->key);
+                deleteAtTail();
+                Node* node = new Node();
+                node->initialize();
+                node->key = key;
+                node->value = value;
+                keyToNode[key] = node;
+                insertAtHead(node);
+            }
+        }
+    }
+};
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
