@@ -1,0 +1,71 @@
+/******************************************************************************
+
+                            Strategy Pattern Example
+It defines a family of algorithms, encapsulate each one and makes them interchangeable. Strategies lets the algorithm vary independently from clients that use it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+
+//Create the Drive Interface
+class DriveStrategy
+{
+public:
+    virtual void drive() const = 0; 
+};
+//Create the Drive classes
+class NormalDrive:public DriveStrategy {
+public:
+   void drive () const override {
+       cout << "Normal Driving Capabilites"<<endl;
+   } 
+} ;
+
+class SpecialDrive:public DriveStrategy{
+public:
+    void drive() const override {
+        cout << "Special Driving Capabilites"<<endl;
+    }
+};
+//Create the vehicle interface
+class Vehicle{
+public:
+    DriveStrategy* obj;
+    
+    Vehicle(DriveStrategy* abc)
+    {
+        this->obj = abc;
+    }
+    
+    virtual void drive() {
+        this->obj->drive();
+    }
+};
+
+class SportsVehicle: public Vehicle{
+public:
+    SportsVehicle(): Vehicle(new SpecialDrive())
+    {
+        cout << "Sports Vehicle Ready"<<endl;
+    }
+};
+
+class PassengerVehicle: public Vehicle{
+public:
+    PassengerVehicle(): Vehicle(new NormalDrive())
+    {
+        cout << "Normal Vehicle Ready"<<endl;
+    }
+};
+
+int main()
+{
+    SportsVehicle sp;
+    sp.drive();
+    
+    PassengerVehicle pv;
+    pv.drive();
+    return 0;
+}
