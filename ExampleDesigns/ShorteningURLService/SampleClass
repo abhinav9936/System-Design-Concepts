@@ -1,0 +1,44 @@
+class Solution {
+private:
+    const string sURL = "ttp://tinyurl.com/";
+    const string CHARS = "0123456789abcdefghijklmnopqrstuvwxyz";
+    const int length = 6;
+    unordered_map<string, string> mp;
+public:
+    Solution()
+    {
+        mp.clear();
+    }
+
+    string randomString()
+    {
+        std::random_device random_device;
+        std::mt19937 generator(random_device());
+        std::uniform_int_distribution<> distribution(0, CHARS.size() - 1);
+
+        std::string random_string;
+
+        for (std::size_t i = 0; i < length; ++i)
+        {
+            random_string += CHARS[distribution(generator)];
+        }
+
+        return random_string;
+    }
+    // Encodes a URL to a shortened URL.
+    string encode(string longUrl) {
+        string rString = randomString();
+        string shortURL = sURL + rString;
+        mp[shortURL] = longUrl;
+        return shortURL;
+    }
+
+    // Decodes a shortened URL to its original URL.
+    string decode(string shortUrl) {
+        return mp[shortUrl];
+    }
+};
+
+// Your Solution object will be instantiated and called as such:
+// Solution solution;
+// solution.decode(solution.encode(url));
